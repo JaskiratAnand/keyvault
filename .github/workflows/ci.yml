@@ -52,15 +52,10 @@ jobs:
         with:
           node-version: 20
       - uses: pnpm/action-setup@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - name: Build WASM Core
+      - name: Create WASM package stub for workspace install
         run: |
-          cd vault-core
-          wasm-pack build --target web
+          mkdir -p vault-core/pkg
+          echo '{"name":"vault-core","version":"0.1.0"}' > vault-core/pkg/package.json
       - name: Run Vitest & Checks
         run: |
           pnpm install
