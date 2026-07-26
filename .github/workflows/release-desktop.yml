@@ -67,6 +67,8 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_GDRIVE_DESKTOP_CLIENT_ID: ${{ secrets.VITE_GDRIVE_DESKTOP_CLIENT_ID }}
+          VITE_GDRIVE_DESKTOP_CLIENT_SECRET: ${{ secrets.VITE_GDRIVE_DESKTOP_CLIENT_SECRET }}
         with:
           projectPath: './vault-desktop'
           tagName: ${{ github.ref_name }}
