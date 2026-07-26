@@ -23,7 +23,7 @@ We take security issues seriously. If you discover a security vulnerability in K
 ### What to Include in Your Report
 1. Detailed description of the vulnerability.
 2. Steps to reproduce or proof-of-concept (PoC) exploit code.
-3. Affected components (`vault-core`, `vault-extension`, `vault-desktop`, or `vault-benchmark`).
+3. Affected components (`vault-core`, `vault-extension`, or `vault-desktop`).
 4. Any proposed fix or mitigation suggestions.
 
 ### Disclosure Process

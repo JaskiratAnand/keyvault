@@ -13,7 +13,6 @@ The repository is structured as a monorepo:
 - **[`vault-core`](file:///Users/jas/Code/passwd-manager/vault-core)**: Core Rust library implementing Argon2id key derivation, AES-256-GCM encryption, tombstone sync merging, and WASM bindings (Dual MIT/Apache-2.0).
 - **[`vault-extension`](file:///Users/jas/Code/passwd-manager/vault-extension)**: Browser extension built with Svelte, TypeScript, WXT framework, and WASM (AGPL-3.0).
 - **[`vault-desktop`](file:///Users/jas/Code/passwd-manager/vault-desktop)**: Desktop app built with Tauri v2, Svelte, TypeScript, and Rust native bindings (AGPL-3.0).
-- **[`vault-benchmark`](file:///Users/jas/Code/passwd-manager/vault-benchmark)**: Web Worker performance benchmark suite comparing WASM, Web Crypto, and JS implementations.
 
 ---
 

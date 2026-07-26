@@ -23,7 +23,8 @@ export class GoogleDriveProvider implements StorageProvider {
     if (storedClientId?.trim()) {
       this.clientId = storedClientId;
     } else {
-      this.clientId = (import.meta as any).env?.VITE_GDRIVE_DESKTOP_CLIENT_ID || '';
+      this.clientId =
+        (import.meta as any).env?.VITE_GDRIVE_DESKTOP_CLIENT_ID || '';
     }
 
     const refreshToken = localStorage.getItem('gdrive_refresh_token');

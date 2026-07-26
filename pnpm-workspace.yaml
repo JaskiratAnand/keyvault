@@ -1,9 +1,6 @@
 packages:
   - 'vault-extension'
   - 'vault-desktop'
-  - 'vault-benchmark'
-
-confirmModulesPurge: false
 
 allowBuilds:
   '@biomejs/biome': true

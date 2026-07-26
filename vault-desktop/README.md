@@ -62,7 +62,7 @@ pnpm tauri build
 
 #### 🍎 macOS (Output: `.app`, `.dmg`)
 - Run the build command on macOS. It utilizes native Xcode Command Line Tools automatically.
-- Output files are generated in `src-tauri/target/release/bundle/dmg/KeyVault_0.1.0_x64.dmg`.
+- Output files are generated in `src-tauri/target/release/bundle/dmg/KeyVault_0.1.0_aarch64.dmg` (or `_x64.dmg` when compiling on Intel Macs).
 
 #### 🪟 Windows (Output: `.exe` / `.msi`)
 - Run the build command on Windows (requires C++ Build Tools).
