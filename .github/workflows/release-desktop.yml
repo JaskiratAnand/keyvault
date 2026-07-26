@@ -43,12 +43,17 @@ jobs:
           node-version: 20
 
       - name: install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
+        uses: pnpm/action-setup@v4
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Create WASM package stub for workspace install
+        run: |
+          mkdir -p vault-core/pkg
+          echo '{"name":"vault-core","version":"0.1.0"}' > vault-core/pkg/package.json
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
@@ -57,9 +62,7 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
       - name: Install desktop frontend dependencies
-        run: |
-          cd vault-desktop
-          pnpm install
+        run: pnpm install
 
       - uses: tauri-apps/tauri-action@v0
         env:

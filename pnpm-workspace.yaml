@@ -1,0 +1,16 @@
+packages:
+  - 'vault-extension'
+  - 'vault-desktop'
+  - 'vault-benchmark'
+
+confirmModulesPurge: false
+
+allowBuilds:
+  '@biomejs/biome': true
+  'esbuild': true
+  'spawn-sync': true
+
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - 'esbuild'
+  - 'spawn-sync'

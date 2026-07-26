@@ -12,5 +12,6 @@
     "test:core": "cd vault-core && cargo test",
     "test:extension": "cd vault-extension && pnpm run test",
     "test:desktop": "cd vault-desktop && pnpm run test"
-  }
+  },
+  "packageManager": "pnpm@10.33.0"
 }
