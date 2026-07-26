@@ -1,0 +1,49 @@
+{
+  "name": "vault-extension",
+  "description": "Secure password manager built with Rust & WebAssembly",
+  "license": "AGPL-3.0-only",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "pnpm run build:wasm && wxt -b firefox",
+    "prebuild": "pnpm run fmt && pnpm run lint && pnpm run check",
+    "build:wasm": "cd ../vault-core && wasm-pack build --target web && node ../vault-extension/scripts/copy-wasm.js",
+    "build": "pnpm run build:wasm && wxt build",
+    "build:firefox": "pnpm run build:wasm && wxt build -b firefox",
+    "zip": "pnpm run build:wasm && wxt zip",
+    "zip:firefox": "pnpm run build:wasm && wxt zip -b firefox",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "postinstall": "wxt prepare",
+    "lint": "oxlint --ignore-pattern \"src/components/ui\" && biome check .",
+    "fmt": "biome format --write .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "bits-ui": "^2.18.1",
+    "clsx": "^2.1.1",
+    "lucide-svelte": "^1.0.1",
+    "tailwind-animate": "^0.2.10",
+    "tailwind-merge": "^3.6.0",
+    "vault-core": "file:../vault-core/pkg"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
+    "@internationalized/date": "^3.12.2",
+    "@lucide/svelte": "^1.26.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tsconfig/svelte": "^5.0.8",
+    "@wxt-dev/module-svelte": "^2.0.5",
+    "oxlint": "^1.75.0",
+    "svelte": "^5.56.7",
+    "svelte-check": "^4.7.3",
+    "tailwind-variants": "^3.2.2",
+    "tailwindcss": "^4.3.3",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
+    "wxt": "^0.20.27"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

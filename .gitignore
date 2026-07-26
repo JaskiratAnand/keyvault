@@ -1,0 +1,12 @@
+.agents
+.DS_Store
+target/
+**/target/
+.impeccable
+.codex
+dist
+dist/
+node_modules
+.env
+skills-lock.json
+docs/teach/

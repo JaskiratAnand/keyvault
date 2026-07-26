@@ -1,0 +1,17 @@
+{
+  "name": "keyvault-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bump:core": "node scripts/bump-version.js core",
+    "bump:extension": "node scripts/bump-version.js extension",
+    "bump:desktop": "node scripts/bump-version.js desktop",
+    "build:core": "cd vault-core && wasm-pack build --target web",
+    "build:extension": "cd vault-extension && pnpm run build",
+    "build:desktop": "cd vault-desktop && pnpm run build",
+    "test:core": "cd vault-core && cargo test",
+    "test:extension": "cd vault-extension && pnpm run test",
+    "test:desktop": "cd vault-desktop && pnpm run test"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

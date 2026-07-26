@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "plugins": ["import"],
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "globals": {
+    "browser": "readonly",
+    "chrome": "readonly",
+    "defineBackground": "readonly",
+    "defineContentScript": "readonly",
+    "defineUnlistedScript": "readonly",
+    "$state": "readonly",
+    "$derived": "readonly",
+    "$props": "readonly",
+    "$effect": "readonly",
+    "$inspect": "readonly",
+    "$host": "readonly"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-unused-vars": "warn",
+    "no-undef": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "prefer-arrow-callback": "error",
+    "object-shorthand": "error",
+    "no-duplicate-imports": "error",
+    "import/no-duplicates": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.svelte"],
+      "rules": {
+        "no-undef": "off",
+        "prefer-const": "off",
+        "no-unassigned-vars": "off",
+        "no-unused-vars": "off"
+      }
+    }
+  ]
+}

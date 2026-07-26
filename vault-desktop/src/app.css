@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@import "tailwind-animate";
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 5.9% 10%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 5.9% 10%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 188 95% 43%;
+  --accent-foreground: 188 95% 95%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 188 95% 43%;
+  --radius: 0.5rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1;
+  color: hsl(var(--muted-foreground));
+}
+
+html,
+body,
+#app {
+  background-color: #09090b;
+  color: #f3f4f6;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Globally hide all scrollbars */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* ==========================================================================
+   Button UI/UX Polish: Transitions, Focus Rings, and Tactile Click Animation
+   ========================================================================== */
+
+/* 1. Global Button Easing & Tactile Micro-Animations */
+button:not(.-translate-y-1\/2),
+button.transition-colors:not(.-translate-y-1\/2),
+button.transition-all:not(.-translate-y-1\/2),
+[role="button"]:not(.-translate-y-1\/2),
+[role="button"].transition-colors:not(.-translate-y-1\/2),
+[role="button"].transition-all:not(.-translate-y-1\/2) {
+  /* Establish identity properties to prevent stacking/layout jumps on hover/active */
+  translate: 0px 0px;
+  rotate: 0deg;
+  scale: 1;
+
+  /* Force hardware acceleration to prevent subpixel text shifting/jittering on hover scale */
+  will-change: scale, translate;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  /* Premium exponential ease-out transition (cubic-bezier(0.16, 1, 0.3, 1)) */
+  transition-property:
+    background-color, border-color, color, fill, stroke, box-shadow, scale,
+    translate, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+/* 2. Tactile States: Hover and Active (Click) */
+button:hover:not(:disabled):not([aria-disabled="true"]):not(.no-scale):not(
+  .-translate-y-1\/2
+),
+[role="button"]:hover:not(:disabled):not([aria-disabled="true"]):not(
+  .no-scale
+):not(.-translate-y-1\/2) {
+  scale: 1.012;
+}
+
+button:active:not(:disabled):not([aria-disabled="true"]):not(.no-scale):not(
+  .-translate-y-1\/2
+),
+[role="button"]:active:not(:disabled):not([aria-disabled="true"]):not(
+  .no-scale
+):not(.-translate-y-1\/2) {
+  scale: 0.988;
+  translate: 0px 1px;
+}
+
+/* 3. Focus Indicators: Accessible High-Contrast Rings */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  border-color: hsl(var(--ring)) !important;
+  box-shadow: 0 0 0 3px hsla(var(--ring), 0.4) !important;
+}
+
+/* 4. Exceptions: Sidebar navigation, segmented controls, inline text links, and custom no-scale elements shouldn't scale or jump */
+aside nav button,
+.grid-cols-3 > button,
+.grid-cols-2 > button,
+.flex-1,
+button.hover\:underline,
+button.text-\[10px\],
+button.text-red-400,
+.no-scale {
+  scale: 1 !important;
+  translate: 0px 0px !important;
+}
+
+/* Windows-specific overrides to fix blurry text rendering by disabling scale transitions and GPU layer-promotion */
+.is-windows .no-scale-windows,
+.is-windows aside nav button,
+.is-windows .grid-cols-3 > button,
+.is-windows .grid-cols-2 > button,
+.is-windows .flex-1,
+.is-windows button.hover\:underline,
+.is-windows button.text-\[10px\],
+.is-windows button.text-red-400,
+.is-windows .no-scale {
+  scale: 1 !important;
+  translate: 0px 0px !important;
+  will-change: auto !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+}
+
+/* 5. Reduced Motion: Respect system accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+  button,
+  [role="button"] {
+    transition: none !important;
+    scale: 1 !important;
+    translate: 0px 0px !important;
+  }
+  button:hover,
+  [role="button"]:hover {
+    scale: 1 !important;
+  }
+  button:active,
+  [role="button"]:active {
+    scale: 1 !important;
+    translate: 0px 0px !important;
+  }
+}
