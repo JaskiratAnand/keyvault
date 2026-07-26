@@ -1,0 +1,32 @@
+# src-tauri/permissions/default.toml
+[[permission]]
+identifier = "allow-all-commands"
+description = "Enables all application-level custom IPC commands."
+commands.allow = [
+    "unlock_vault",
+    "lock_vault",
+    "check_vault_exists",
+    "reset_vault",
+    "get_vault",
+    "get_vault_items",
+    "save_vault_item",
+    "delete_vault_item",
+    "restore_vault_item",
+    "purge_vault_item",
+    "merge_vaults",
+    "overwrite_local_vault",
+    "get_encrypted_vault_payload",
+    "decrypt_remote_vault",
+    "start_gdrive_auth",
+    "generate_credential",
+    "verify_password",
+    "export_vault_csv",
+    "import_vault_csv",
+    "select_and_import_csv",
+    "is_biometrics_supported",
+    "authenticate_biometrics",
+    "generate_totp",
+    "generate_recovery_key_payload",
+    "recover_vault_with_key",
+    "gdrive_token_request"
+]

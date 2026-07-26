@@ -1,0 +1,46 @@
+{
+  "name": "vault-desktop",
+  "license": "AGPL-3.0-only",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "pretauri": "pnpm fmt && pnpm lint",
+    "lint": "oxlint --ignore-pattern \"src/components/ui\" && biome check .",
+    "fmt": "biome format --write .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "bits-ui": "^2.18.1",
+    "clsx": "^2.1.1",
+    "lucide-svelte": "^1.0.1",
+    "tailwind-animate": "^0.2.10",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
+    "@lucide/svelte": "^1.26.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/cli": "^2.11.4",
+    "@testing-library/svelte": "^5.4.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.13.3",
+    "jsdom": "^29.1.1",
+    "oxlint": "^1.75.0",
+    "svelte": "^5.56.8",
+    "svelte-check": "^4.7.3",
+    "tailwind-variants": "^3.2.2",
+    "tailwindcss": "^4.3.3",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
+  }
+}
