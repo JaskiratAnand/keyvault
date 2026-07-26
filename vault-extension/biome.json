@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/src/components/ui", "!**/public/wxt.svg"]
+    "includes": ["**", "!**/src/components/ui"]
   },
   "formatter": {
     "enabled": true,
