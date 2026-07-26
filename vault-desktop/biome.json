@@ -7,11 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**",
-      "!**/src/components/ui",
-      "!**/src-tauri"
-    ]
+    "includes": ["**", "!**/src/components/ui", "!**/src-tauri"]
   },
   "formatter": {
     "enabled": true,

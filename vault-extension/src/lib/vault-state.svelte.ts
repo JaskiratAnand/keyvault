@@ -324,6 +324,21 @@ class VaultState {
       this.vaultJson = '';
       this.isRegistered = false;
       this.isUnlocked = false;
+
+      // Clear Google Drive sync & login state
+      const provider = getStorageProvider('google');
+      if (provider) {
+        try {
+          await provider.signOut();
+        } catch {
+          // Ignore signout errors on reset
+        }
+      }
+      this.syncNeedsPassword = false;
+      this.pendingRemoteSalt = null;
+      this.pendingRemotePayload = null;
+      this.pendingRemoteMetadata = null;
+
       await this.clearSessionState();
       return true;
     } catch (e) {

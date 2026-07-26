@@ -181,6 +181,21 @@ class VaultState {
       this.isUnlocked = false;
       this.vault = null;
       this.selectedItem = null;
+
+      // Clear Google Drive login & sync information
+      try {
+        await this.syncProvider.signOut();
+      } catch (err) {
+        console.warn('Sign out during vault reset failed:', err);
+      }
+      this.gdriveAuthenticated = false;
+      this.gdriveEmail = '';
+      this.syncNeedsPassword = false;
+      this.pendingRemotePayload = null;
+      this.pendingRemoteMetadata = null;
+      this.pendingRemoteSalt = null;
+      this.syncError = '';
+
       await this.checkVaultExists();
       return true;
     } catch (err) {
@@ -321,7 +336,7 @@ class VaultState {
 
         // Success! Perform merge
         const merged = await invoke('merge_vaults', {
-          remote_vault: remoteVault,
+          remoteVault,
         });
         this.vault = merged as Vault;
 
@@ -358,14 +373,18 @@ class VaultState {
       this.syncError = '';
       this.loading = true;
       // Decrypt remote vault using password
-      const [remoteVault, _, remoteKey] = await invoke('decrypt_remote_vault', {
-        payload: Array.from(this.pendingRemotePayload),
-        password,
-      });
+      const [remoteVault, remoteSalt, remoteKey] = await invoke(
+        'decrypt_remote_vault',
+        {
+          payload: Array.from(this.pendingRemotePayload),
+          password,
+        },
+      );
       // Overwrite local vault
       await invoke('overwrite_local_vault', {
-        remote_vault: remoteVault,
-        remote_key: remoteKey,
+        remoteVault,
+        remoteKey,
+        remoteSalt,
       });
       this.isUnlocked = true;
       this.vault = remoteVault;
@@ -393,22 +412,35 @@ class VaultState {
       this.loading = true;
 
       // Attempt decryption on the backend with the provided password
-      const [remoteVault, _, remoteKey] = await invoke('decrypt_remote_vault', {
-        payload: Array.from(this.pendingRemotePayload),
-        password,
-      });
+      const [remoteVault, remoteSalt, remoteKey] = await invoke(
+        'decrypt_remote_vault',
+        {
+          payload: Array.from(this.pendingRemotePayload),
+          password,
+        },
+      );
 
-      // Merge local with remote
-      const merged = await invoke('merge_vaults', {
-        remote_vault: remoteVault,
-      });
-      this.vault = merged as Vault;
+      let finalVault: Vault = remoteVault;
 
-      // Overwrite local credentials key and salt with remote key/salt
+      // Update local vault key and salt to match remote credentials first
       await invoke('overwrite_local_vault', {
-        remote_vault: merged,
-        remote_key: remoteKey,
+        remoteVault,
+        remoteKey,
+        remoteSalt,
       });
+
+      // If local vault was already unlocked, merge remote with existing local vault
+      if (this.isUnlocked && this.vault) {
+        const merged = await invoke('merge_vaults', {
+          remoteVault,
+        });
+        finalVault = merged as Vault;
+      } else {
+        this.isUnlocked = true;
+      }
+
+      this.vault = finalVault;
+      await this.checkVaultExists();
 
       // Re-encrypt and upload to Google Drive
       const updatedPayload = await invoke('get_encrypted_vault_payload');
@@ -423,8 +455,13 @@ class VaultState {
       this.pendingRemoteMetadata = null;
       this.pendingRemoteSalt = null;
       return true;
-    } catch {
-      this.syncError = 'Decryption failed: Invalid password.';
+    } catch (err) {
+      const msg = getErrorMsg(err);
+      if (msg.includes('Invalid password') || msg.includes('key mismatch')) {
+        this.syncError = 'Decryption failed: Invalid password.';
+      } else {
+        this.syncError = `Sync failed: ${msg}`;
+      }
       return false;
     } finally {
       this.loading = false;
@@ -504,13 +541,14 @@ class VaultState {
 
       // Decrypt using current session key
       try {
-        const [remoteVault, _, remoteKey] = await invoke(
+        const [remoteVault, remoteSalt, remoteKey] = await invoke(
           'decrypt_remote_vault',
           { payload: Array.from(payload), password: null },
         );
         await invoke('overwrite_local_vault', {
-          remote_vault: remoteVault,
-          remote_key: remoteKey,
+          remoteVault,
+          remoteKey,
+          remoteSalt,
         });
         await this.loadVault();
       } catch {

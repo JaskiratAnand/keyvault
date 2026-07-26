@@ -36,12 +36,14 @@ pub fn merge_vaults<R: tauri::Runtime>(
 pub fn overwrite_local_vault<R: tauri::Runtime>(
     remote_vault: Vault,
     remote_key: Vec<u8>,
+    remote_salt: Vec<u8>,
     state: State<'_, VaultState>,
     app_handle: tauri::AppHandle<R>,
 ) -> Result<(), AppError> {
     let mut session = state.lock().map_err(|_| AppError::StateLock)?;
     session.vault = Some(remote_vault);
     session.key = Some(remote_key);
+    session.salt = Some(remote_salt);
     session.save(&app_handle)?;
     Ok(())
 }
@@ -339,7 +341,7 @@ mod tests {
             session.unlock("my-pass", &app).unwrap();
         }
 
-        // 2. Prepare remote vault and key
+        // 2. Prepare remote vault, key, and salt
         let mut remote_vault = Vault::new();
         remote_vault.add_item(create_test_note(
             "remote-note",
@@ -347,11 +349,13 @@ mod tests {
             "2026-07-20T05:00:00Z",
         ));
         let remote_key = vec![1u8; 32];
+        let remote_salt = vec![2u8; 16];
 
         // 3. Overwrite
         overwrite_local_vault(
             remote_vault.clone(),
             remote_key.clone(),
+            remote_salt.clone(),
             state.clone(),
             app.clone(),
         )
@@ -361,6 +365,7 @@ mod tests {
         {
             let session = state.lock().unwrap();
             assert_eq!(session.key.as_ref().unwrap(), &remote_key);
+            assert_eq!(session.salt.as_ref().unwrap(), &remote_salt);
             assert_eq!(session.get_vault().unwrap().items[0].id(), "remote-note");
         }
 
@@ -469,5 +474,82 @@ mod tests {
             decrypt_remote_vault(payload, None, state.clone()).unwrap();
         assert_eq!(decrypted_vault_session.items.len(), 1);
         assert_eq!(decrypted_vault_session.items[0].id(), "note-dec");
+    }
+
+    #[test]
+    fn test_resolve_salt_mismatch_preserves_remote_salt_for_subsequent_unlocks() {
+        let _guard = TestGuard::new("mismatch_preserve_salt");
+        let app = create_mock_app();
+        let state = app.state::<crate::VaultState>();
+
+        // 1. Create a remote vault payload created with "remote-pass-123"
+        let remote_pass = "remote-pass-123";
+        let mut remote_salt = [0u8; 16];
+        vault_core::crypto::generate_random_bytes(&mut remote_salt).unwrap();
+
+        let remote_key = vault_core::crypto::derive_key(
+            remote_pass,
+            &remote_salt,
+            vault_core::crypto::Argon2Params::default(),
+        )
+        .unwrap();
+
+        let mut remote_vault = Vault::new();
+        remote_vault.add_item(create_test_note(
+            "remote-item-1",
+            "Remote Note",
+            "2026-07-26T12:00:00Z",
+        ));
+
+        let remote_vault_json = serde_json::to_vec(&remote_vault).unwrap();
+        let mut nonce = [0u8; 12];
+        vault_core::crypto::generate_random_bytes(&mut nonce).unwrap();
+        let ciphertext = vault_core::crypto::encrypt(&remote_key, &remote_vault_json, &nonce).unwrap();
+
+        let mut remote_payload = b"KV01".to_vec();
+        remote_payload.extend_from_slice(&remote_salt);
+        remote_payload.extend_from_slice(&nonce);
+        remote_payload.extend(ciphertext);
+
+        // 2. Initialize desktop session with a DIFFERENT local password
+        {
+            let mut session = state.lock().unwrap();
+            session.unlock("local-pass-different", &app).unwrap();
+        }
+
+        // 3. Decrypt remote payload using remote password
+        let (decrypted_vault, salt, key) = decrypt_remote_vault(
+            remote_payload.clone(),
+            Some(remote_pass.to_string()),
+            state.clone(),
+        )
+        .unwrap();
+
+        assert_eq!(salt, remote_salt.to_vec());
+
+        // 4. Overwrite local vault with remote vault, key, AND salt
+        overwrite_local_vault(
+            decrypted_vault,
+            key,
+            salt,
+            state.clone(),
+            app.clone(),
+        )
+        .unwrap();
+
+        // 5. Retrieve stored vault payload from disk
+        let saved_payload = get_encrypted_vault_payload(app.clone()).unwrap();
+
+        // 6. Verify that decrypting the stored payload with remote_pass SUCCEEDS!
+        let (re_decrypted_vault, re_salt, _) = decrypt_remote_vault(
+            saved_payload,
+            Some(remote_pass.to_string()),
+            state.clone(),
+        )
+        .unwrap();
+
+        assert_eq!(re_salt, remote_salt.to_vec());
+        assert_eq!(re_decrypted_vault.items.len(), 1);
+        assert_eq!(re_decrypted_vault.items[0].id(), "remote-item-1");
     }
 }
