@@ -30,7 +30,10 @@ Zero-knowledge, local-first password manager workspace powered by a high-perform
 
 ### 🖥️ Desktop Application
 
-#### **macOS (Homebrew - Recommended)**
+#### **macOS**
+
+**Homebrew (Recommended):**
+
 Installing via Homebrew automatically bypasses macOS Gatekeeper quarantine warnings:
 
 ```bash
@@ -39,15 +42,19 @@ brew trust JaskiratAnand/tap
 brew install --cask keyvault
 ```
 
+**Download .dmg:**
+
+Download `KeyVault_aarch64.dmg` (Apple Silicon `arm64`) and drag `KeyVault.app` to `/Applications`.
+
+> **📌 macOS Gatekeeper Note**: If macOS displays `"KeyVault is damaged and can't be opened"`, open Terminal and run: `xattr -cr /Applications/KeyVault.app`
+
+> **Note on macOS Intel (x64)**: Pre-built binaries for Intel-based Macs (`x64`) are not available. Intel Mac users can build the application locally from source (see [Quick Start](#quick-start-development)).*  
+
 #### **Windows & Direct Downloads**
 Download pre-built installers from [GitHub Releases](https://github.com/JaskiratAnand/keyvault/releases):
 
 - **Windows**: Download `KeyVault_x64-setup.exe` and run the installer.  
   *(If Windows SmartScreen appears: Click **More info** $\rightarrow$ **Run anyway**).*
-- **macOS (.dmg)**: Download `KeyVault_aarch64.dmg` (Apple Silicon `arm64`) and drag `KeyVault.app` to `/Applications`.  
-  *> **Note on macOS Intel (x64)**: Pre-built binaries for Intel-based Macs (`x64`) are not available. Intel Mac users can build the application locally from source (see [Quick Start](#quick-start-development)).*  
-  *> **📌 macOS Gatekeeper Note**: If macOS displays `"KeyVault is damaged and can't be opened"`, open Terminal and run:*  
-  *> `xattr -cr /Applications/KeyVault.app`*
 
 ---
 
