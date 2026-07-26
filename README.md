@@ -35,6 +35,7 @@ Installing via Homebrew automatically bypasses macOS Gatekeeper quarantine warni
 
 ```bash
 brew tap JaskiratAnand/tap
+brew trust JaskiratAnand/tap
 brew install --cask keyvault
 ```
 
@@ -43,7 +44,8 @@ Download pre-built installers from [GitHub Releases](https://github.com/Jaskirat
 
 - **Windows**: Download `KeyVault_x64-setup.exe` and run the installer.  
   *(If Windows SmartScreen appears: Click **More info** $\rightarrow$ **Run anyway**).*
-- **macOS (.dmg)**: Download `KeyVault_x64.dmg` and drag `KeyVault.app` to `/Applications`.  
+- **macOS (.dmg)**: Download `KeyVault_aarch64.dmg` (Apple Silicon `arm64`) and drag `KeyVault.app` to `/Applications`.  
+  *> **Note on macOS Intel (x64)**: Pre-built binaries for Intel-based Macs (`x64`) are not available. Intel Mac users can build the application locally from source (see [Quick Start](#quick-start-development)).*  
   *> **📌 macOS Gatekeeper Note**: If macOS displays `"KeyVault is damaged and can't be opened"`, open Terminal and run:*  
   *> `xattr -cr /Applications/KeyVault.app`*
 
