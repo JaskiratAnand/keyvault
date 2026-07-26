@@ -42,6 +42,8 @@ jobs:
         run: pnpm install
 
       - name: Build Extension Zip
+        env:
+          VITE_GDRIVE_CLIENT_ID: ${{ secrets.VITE_GDRIVE_CLIENT_ID }}
         run: pnpm --filter vault-extension run zip
 
       - name: Extract Tag Version
