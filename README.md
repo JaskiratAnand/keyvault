@@ -44,23 +44,23 @@ brew install --cask keyvault
 
 **Download .dmg:**
 
-Download `KeyVault_aarch64.dmg` (Apple Silicon `arm64`) and drag `KeyVault.app` to `/Applications`.
+Download [`KeyVault_aarch64.dmg`](https://github.com/JaskiratAnand/keyvault/releases?q=desktop) (Apple Silicon `arm64`) and drag `KeyVault.app` to `/Applications`.
 
 > **📌 macOS Gatekeeper Note**: If macOS displays `"KeyVault is damaged and can't be opened"`, open Terminal and run: `xattr -cr /Applications/KeyVault.app`
 
 > **Note on macOS Intel (x64)**: Pre-built binaries for Intel-based Macs (`x64`) are not available. Intel Mac users can build the application locally from source (see [Quick Start](#quick-start-development)).*  
 
 #### **Windows & Direct Downloads**
-Download pre-built installers from [GitHub Releases](https://github.com/JaskiratAnand/keyvault/releases):
+Download pre-built installers from [Desktop Releases](https://github.com/JaskiratAnand/keyvault/releases?q=desktop):
 
-- **Windows**: Download `KeyVault_x64-setup.exe` and run the installer.  
+- **Windows**: Download [`KeyVault_x64-setup.exe`](https://github.com/JaskiratAnand/keyvault/releases?q=desktop-v) and run the installer.  
   *(If Windows SmartScreen appears: Click **More info** $\rightarrow$ **Run anyway**).*
 
 ---
 
 ### **🧩 Chrome Browser Extension**
 
-1. Download the latest `keyvault-extension-v*.zip` from [GitHub Releases](https://github.com/JaskiratAnand/keyvault/releases).
+1. Download the latest `keyvault-extension-v*.zip` from [Extension Releases](https://github.com/JaskiratAnand/keyvault/releases?q=extension).
 2. Unzip the downloaded file into a folder on your computer.
 3. Open Chrome (or Chromium-based browsers like Edge, Brave, or Arc) and go to `chrome://extensions`.
 4. Enable **Developer mode** (toggle in the top-right corner).
