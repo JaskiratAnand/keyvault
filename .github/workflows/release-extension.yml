@@ -35,6 +35,11 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
+      - name: Build WASM Core
+        run: |
+          cd vault-core
+          wasm-pack build --target web
+
       - name: Install extension dependencies
         run: |
           cd vault-extension

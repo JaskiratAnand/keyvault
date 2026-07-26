@@ -34,6 +34,11 @@ jobs:
           targets: wasm32-unknown-unknown
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM Core
+        run: |
+          cd vault-core
+          wasm-pack build --target web
+
       - name: Run Vitest & Checks
         run: |
           cd vault-extension
