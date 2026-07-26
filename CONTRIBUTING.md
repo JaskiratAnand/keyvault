@@ -55,7 +55,7 @@ If you plan to work on Google Drive sync features in the extension or desktop ap
 2. Create a project in [Google Cloud Console](https://console.cloud.google.com/).
 3. Enable the **Google Drive API** under **APIs & Services > Library**.
 4. Create **OAuth 2.0 Client IDs** (Chrome App / Extension for browser extension; Desktop App for desktop app).
-5. Paste your `VITE_GDRIVE_CLIENT_ID` into `vault-extension/.env` or `vault-desktop/.env`.
+5. Paste your `VITE_GDRIVE_CLIENT_ID` into `vault-extension/.env` or `VITE_GDRIVE_DESKTOP_CLIENT_ID` into `vault-desktop/.env`.
 
 ### 3. Run the Browser Extension
 

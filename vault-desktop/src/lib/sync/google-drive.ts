@@ -3,7 +3,7 @@ import type { StorageProvider } from './types.js';
 
 export class GoogleDriveProvider implements StorageProvider {
   private clientId: string =
-    (import.meta as any).env?.VITE_GDRIVE_CLIENT_ID || '';
+    (import.meta as any).env?.VITE_GDRIVE_DESKTOP_CLIENT_ID || '';
 
   setClientId(clientId: string) {
     if (clientId?.trim()) {
@@ -23,7 +23,7 @@ export class GoogleDriveProvider implements StorageProvider {
     if (storedClientId?.trim()) {
       this.clientId = storedClientId;
     } else {
-      this.clientId = (import.meta as any).env?.VITE_GDRIVE_CLIENT_ID || '';
+      this.clientId = (import.meta as any).env?.VITE_GDRIVE_DESKTOP_CLIENT_ID || '';
     }
 
     const refreshToken = localStorage.getItem('gdrive_refresh_token');
@@ -43,7 +43,7 @@ export class GoogleDriveProvider implements StorageProvider {
         const invoke = (window as any).__TAURI__?.core?.invoke;
         if (invoke) {
           const clientSecret =
-            (import.meta as any).env?.VITE_GDRIVE_CLIENT_SECRET || '';
+            (import.meta as any).env?.VITE_GDRIVE_DESKTOP_CLIENT_SECRET || '';
           const data = await invoke('gdrive_token_request', {
             clientId: this.clientId,
             grantType: 'refresh_token',
@@ -83,7 +83,7 @@ export class GoogleDriveProvider implements StorageProvider {
         if (!code) return null;
 
         const clientSecret =
-          (import.meta as any).env?.VITE_GDRIVE_CLIENT_SECRET || '';
+          (import.meta as any).env?.VITE_GDRIVE_DESKTOP_CLIENT_SECRET || '';
         // Exchange authorization code for tokens via Rust backend to bypass CORS
         const data = await invoke('gdrive_token_request', {
           clientId: this.clientId,
