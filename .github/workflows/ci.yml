@@ -41,9 +41,9 @@ jobs:
 
       - name: Run Vitest & Checks
         run: |
-          cd vault-extension
           pnpm install
-          pnpm run test
+          pnpm --filter vault-extension run build:wasm
+          pnpm --filter vault-extension run test
 
   test-desktop:
     name: Test Desktop
@@ -58,6 +58,5 @@ jobs:
           version: 9
       - name: Run Vitest & Checks
         run: |
-          cd vault-desktop
           pnpm install
-          pnpm run test
+          pnpm --filter vault-desktop run test
