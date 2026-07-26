@@ -73,6 +73,13 @@ jobs:
           projectPath: './vault-desktop'
           tagName: ${{ github.ref_name }}
           releaseName: 'KeyVault Desktop ${{ github.ref_name }}'
-          releaseBody: 'See release details for changes in KeyVault Desktop ${{ github.ref_name }}.'
+          releaseBody: |
+            KeyVault Desktop release ${{ github.ref_name }}.
+
+            ### 📌 macOS Note ("KeyVault is damaged and can't be opened")
+            If macOS blocks the app with `"KeyVault" is damaged and can't be opened`, run this command in Terminal after moving the app to Applications:
+            ```bash
+            xattr -cr /Applications/KeyVault.app
+            ```
           releaseDraft: false
           prerelease: false
