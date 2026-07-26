@@ -75,5 +75,13 @@ export default defineConfig({
       },
     ],
     key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxKsmEcF0IUx8nyEIaC5k/PNNi+SDC54+dO6cVR1SwHz3K6R8baElWUdhr2kN6/XYabDgCILvr61OF3nzbdQgj2gUSPL2tdaJgU+JLcouOQpItEG/2/tn0xUR+NnbWoKJMLhrjAAFSskVkNyBQtZToq5MSAsME52D9ydGyuQFz9I035D1HCBF6yyOZNifxAvctvJAZo4QY6DwZJAtEwGlOLot7iX8E+/GZ8gRP4Q5LjXMh347Kc9G0L5qT4OlNWXFN7WpeObuRbIWkft+4Q0jl4Ijx69OK6cwM/+XXLzIv+hAV/30yKvkoeAMpOuWAi3SW7DirFo+ISbfak7YhhsVKwIDAQAB',
+    action: {
+      default_icon: {
+        16: 'icon/16.png',
+        32: 'icon/32.png',
+        48: 'icon/48.png',
+        128: 'icon/128.png',
+      },
+    },
   },
 });
