@@ -346,4 +346,27 @@ describe('VaultState & Sync Integration Tests', () => {
     const code = vaultState.generateTotp(secret, 1234567890);
     expect(code).toBe('005924');
   });
+
+  it('should clear local storage and Google Drive sync state on resetVault', async () => {
+    const originalSignOut = GoogleDriveProvider.prototype.signOut;
+    GoogleDriveProvider.prototype.signOut = vi.fn().mockResolvedValue(undefined);
+
+    vaultState.syncNeedsPassword = true;
+    vaultState.pendingRemotePayload = new Uint8Array([1, 2, 3]);
+    vaultState.pendingRemoteSalt = new Uint8Array([4, 5, 6]);
+
+    const res = await vaultState.resetVault();
+
+    expect(res).toBe(true);
+    expect(GoogleDriveProvider.prototype.signOut).toHaveBeenCalled();
+    expect(vaultState.syncNeedsPassword).toBe(false);
+    expect(vaultState.pendingRemotePayload).toBeNull();
+    expect(vaultState.pendingRemoteSalt).toBeNull();
+    expect(browser.storage.local.remove).toHaveBeenCalledWith([
+      'vault_salt',
+      'vault_payload',
+    ]);
+
+    GoogleDriveProvider.prototype.signOut = originalSignOut;
+  });
 });

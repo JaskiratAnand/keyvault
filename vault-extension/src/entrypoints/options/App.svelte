@@ -1480,7 +1480,7 @@ onMount(async () => {
                                                                 {:else}
                                                                     <span class="text-[11px] text-zinc-500 italic animate-pulse">Generating...</span>
                                                                 {/if}
-                                                                
+
                                                                 <!-- Visual countdown bar/indicator -->
                                                                 <div class="flex items-center gap-1.5 shrink-0">
                                                                     <div class="w-12 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
@@ -2182,7 +2182,7 @@ onMount(async () => {
                                                                 {:else}
                                                                     <span class="text-xs text-zinc-500 italic animate-pulse">Generating...</span>
                                                                 {/if}
-                                                                
+
                                                                 <!-- Visual countdown bar/indicator -->
                                                                 <div class="flex items-center gap-1.5 shrink-0">
                                                                     <div class="w-12 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
@@ -2558,10 +2558,6 @@ onMount(async () => {
                                                 <h4 class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Google Drive Backup</h4>
                                                 {#if remoteFileInfo}
                                                     <div class="space-y-1.5 text-xs">
-                                                        <div class="flex justify-between text-zinc-400">
-                                                            <span>Entries:</span>
-                                                            <span class="text-white font-medium">{remoteFileInfo.entryCount}</span>
-                                                        </div>
                                                         <div class="flex justify-between text-zinc-400">
                                                             <span>Size:</span>
                                                             <span class="text-white font-medium">{(remoteFileInfo.sizeBytes ? remoteFileInfo.sizeBytes / 1024 : 0).toFixed(1)} KB</span>

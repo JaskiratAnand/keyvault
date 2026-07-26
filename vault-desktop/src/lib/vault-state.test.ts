@@ -440,4 +440,224 @@ describe('VaultState', () => {
       expect(loadingStates[1]).toBe(false);
     });
   });
+
+  // -------------------------------------------------------------------------
+  describe('resolveSyncSaltMismatch()', () => {
+    it('successfully resolves mismatch and overwrites local vault with remote_salt and remote_key', async () => {
+      const mockRemoteVault = makeVault({
+        items: [makeSecureNote('r1', 'Remote Note')],
+      });
+      const pendingPayload = new Uint8Array([
+        75,
+        86,
+        48,
+        49,
+        ...Array(28).fill(0),
+      ]);
+      const fakeSalt = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+      const fakeKey = Array(32).fill(9);
+
+      vaultState.pendingRemotePayload = pendingPayload;
+      vaultState.pendingRemoteMetadata = { eTag: 'etag1' };
+      vaultState.syncNeedsPassword = true;
+      vaultState.syncProvider = {
+        uploadVault: vi.fn().mockResolvedValue({ eTag: 'etag2' }),
+      };
+
+      invokeMock = makeIpc({
+        decrypt_remote_vault: () => [mockRemoteVault, fakeSalt, fakeKey],
+        overwrite_local_vault: (args: any) => {
+          expect(args.remoteSalt).toEqual(fakeSalt);
+          expect(args.remoteKey).toEqual(fakeKey);
+          return undefined;
+        },
+        check_vault_exists: () => true,
+        get_encrypted_vault_payload: () => [75, 86, 48, 49],
+      });
+      stubTauri(invokeMock);
+
+      const res = await vaultState.resolveSyncSaltMismatch('remote-password');
+
+      expect(res).toBe(true);
+      expect(vaultState.syncNeedsPassword).toBe(false);
+      expect(vaultState.pendingRemotePayload).toBeNull();
+      expect(vaultState.isUnlocked).toBe(true);
+      expect(vaultState.vault?.items[0].id).toBe('r1');
+    });
+
+    it('sets syncError when decrypt_remote_vault fails with invalid password', async () => {
+      vaultState.pendingRemotePayload = new Uint8Array([75, 86, 48, 49]);
+
+      invokeMock = vi.fn((cmd: string) => {
+        if (cmd === 'decrypt_remote_vault') {
+          return Promise.reject('Invalid password or key mismatch');
+        }
+        return Promise.resolve(undefined);
+      });
+      stubTauri(invokeMock);
+
+      const res = await vaultState.resolveSyncSaltMismatch('wrong-password');
+
+      expect(res).toBe(false);
+      expect(vaultState.syncError).toBe('Decryption failed: Invalid password.');
+    });
+
+    it('merges remote vault into local vault when local vault is already unlocked', async () => {
+      const mockLocalVault = makeVault({
+        items: [makeSecureNote('l1', 'Local Note')],
+      });
+      const mockRemoteVault = makeVault({
+        items: [makeSecureNote('r1', 'Remote Note')],
+      });
+      const mockMergedVault = makeVault({
+        items: [
+          makeSecureNote('l1', 'Local Note'),
+          makeSecureNote('r1', 'Remote Note'),
+        ],
+      });
+
+      vaultState.isUnlocked = true;
+      vaultState.vault = mockLocalVault;
+      vaultState.pendingRemotePayload = new Uint8Array([
+        75,
+        86,
+        48,
+        49,
+        ...Array(28).fill(0),
+      ]);
+      vaultState.pendingRemoteMetadata = { eTag: 'etag1' };
+      vaultState.syncNeedsPassword = true;
+      vaultState.syncProvider = {
+        uploadVault: vi.fn().mockResolvedValue({ eTag: 'etag2' }),
+      };
+
+      const fakeSalt = [1, 2, 3, 4];
+      const fakeKey = Array(32).fill(7);
+
+      invokeMock = makeIpc({
+        decrypt_remote_vault: () => [mockRemoteVault, fakeSalt, fakeKey],
+        overwrite_local_vault: (args: any) => {
+          expect(args.remoteSalt).toEqual(fakeSalt);
+          expect(args.remoteKey).toEqual(fakeKey);
+          return undefined;
+        },
+        merge_vaults: (args: any) => {
+          expect(args.remoteVault).toEqual(mockRemoteVault);
+          return mockMergedVault;
+        },
+        check_vault_exists: () => true,
+        get_encrypted_vault_payload: () => [75, 86, 48, 49],
+      });
+      stubTauri(invokeMock);
+
+      const res = await vaultState.resolveSyncSaltMismatch('remote-password');
+
+      expect(res).toBe(true);
+      expect(vaultState.vault?.items).toHaveLength(2);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  describe('restoreRemoteFirstTime()', () => {
+    it('restores vault for first time passing remote_salt and remote_key', async () => {
+      const mockRemoteVault = makeVault({
+        items: [makeDomainGroup('d1', 'Google')],
+      });
+      const pendingPayload = new Uint8Array([
+        75,
+        86,
+        48,
+        49,
+        ...Array(28).fill(0),
+      ]);
+      const fakeSalt = [10, 20, 30, 40];
+      const fakeKey = Array(32).fill(5);
+
+      vaultState.pendingRemotePayload = pendingPayload;
+      vaultState.syncNeedsPassword = true;
+
+      invokeMock = makeIpc({
+        decrypt_remote_vault: () => [mockRemoteVault, fakeSalt, fakeKey],
+        overwrite_local_vault: (args: any) => {
+          expect(args.remoteSalt).toEqual(fakeSalt);
+          expect(args.remoteKey).toEqual(fakeKey);
+          return undefined;
+        },
+        check_vault_exists: () => true,
+      });
+      stubTauri(invokeMock);
+
+      const res = await vaultState.restoreRemoteFirstTime('my-password');
+
+      expect(res).toBe(true);
+      expect(vaultState.syncNeedsPassword).toBe(false);
+      expect(vaultState.isUnlocked).toBe(true);
+      expect(vaultState.vault?.items[0].id).toBe('d1');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  describe('syncVault() background salt mismatch handling', () => {
+    it('triggers syncNeedsPassword modal when remote decryption with session key fails', async () => {
+      const dummyPayload = new Uint8Array([
+        75, 86, 48, 49, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+        24, 25,
+      ]);
+
+      vaultState.gdriveAuthenticated = true;
+      vaultState.syncing = false;
+      vaultState.syncProvider = {
+        downloadVault: vi.fn().mockResolvedValue({
+          payload: dummyPayload,
+          metadata: { eTag: 'etag1' },
+        }),
+      };
+
+      invokeMock = vi.fn((cmd: string) => {
+        if (cmd === 'decrypt_remote_vault') {
+          return Promise.reject('Invalid password or key mismatch');
+        }
+        return Promise.resolve(undefined);
+      });
+      stubTauri(invokeMock);
+
+      await vaultState.syncVault();
+
+      expect(vaultState.syncNeedsPassword).toBe(true);
+      expect(vaultState.pendingRemotePayload).toBe(dummyPayload);
+      expect(vaultState.pendingRemoteSalt).toEqual(
+        new Uint8Array([
+          10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        ]),
+      );
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  describe('resetVault()', () => {
+    it('clears Google Drive auth state and disconnects sync when local vault is reset', async () => {
+      const signOutSpy = vi.fn().mockResolvedValue(undefined);
+      vaultState.syncProvider = { signOut: signOutSpy };
+      vaultState.gdriveAuthenticated = true;
+      vaultState.gdriveEmail = 'user@example.com';
+      vaultState.syncNeedsPassword = true;
+      vaultState.pendingRemotePayload = new Uint8Array([1, 2, 3]);
+
+      invokeMock = makeIpc({
+        reset_vault: () => undefined,
+        check_vault_exists: () => false,
+      });
+      stubTauri(invokeMock);
+
+      const res = await vaultState.resetVault();
+
+      expect(res).toBe(true);
+      expect(signOutSpy).toHaveBeenCalled();
+      expect(vaultState.gdriveAuthenticated).toBe(false);
+      expect(vaultState.gdriveEmail).toBe('');
+      expect(vaultState.syncNeedsPassword).toBe(false);
+      expect(vaultState.pendingRemotePayload).toBeNull();
+      expect(vaultState.isUnlocked).toBe(false);
+    });
+  });
 });

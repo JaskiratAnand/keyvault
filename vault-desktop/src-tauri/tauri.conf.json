@@ -1,6 +1,6 @@
 {
   "productName": "KeyVault",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "identifier": "com.keyvault.desktop",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -17,7 +17,6 @@
         "height": 600
       }
     ],
-
     "security": {
       "csp": null
     }
